@@ -117,6 +117,11 @@ int net_run(void)
 {
     struct net_device *dev;
 
+    if (intr_run() == -1) {
+        errorf("Interrupt start failed.");
+        return -1;
+    }
+
     debugf("open all devices...");
     for (dev = devices; dev; dev = dev->next) {
         net_device_open(dev);
@@ -127,11 +132,17 @@ int net_run(void)
 
 void net_shutdown(void)
 {
-
+    intr_shutdown();
+    debugf("Procotol stack down.");
 }
 
 int net_init(void)
 {
+    if (intr_init() == -1) {
+        errorf("Interrupt initialize failed.");
+        return -1;
+    }
+
     infof("protocol stack initialized");
     return 0;
 }
